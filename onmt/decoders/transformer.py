@@ -22,20 +22,20 @@ class TransformerDecoderLayer(nn.Module):
       self_attn_type (string): type of self-attention scaled-dot, average
     """
 
-    def __init__(self, d_model, heads, d_ff, dropout,
+    def __init__(self, d_model, heads, d_ff, dropout, relu_dropout, attn_dropout,
                  self_attn_type="scaled-dot", max_relative_positions=0):
         super(TransformerDecoderLayer, self).__init__()
 
         if self_attn_type == "scaled-dot":
             self.self_attn = MultiHeadedAttention(
-                heads, d_model, dropout=dropout,
+                heads, d_model, dropout=attn_dropout,
                 max_relative_positions=max_relative_positions)
         elif self_attn_type == "average":
-            self.self_attn = AverageAttention(d_model, dropout=dropout)
+            self.self_attn = AverageAttention(d_model, dropout=attn_dropout)
 
         self.context_attn = MultiHeadedAttention(
-            heads, d_model, dropout=dropout)
-        self.feed_forward = PositionwiseFeedForward(d_model, d_ff, dropout)
+            heads, d_model, dropout=attn_dropout)
+        self.feed_forward = PositionwiseFeedForward(d_model, d_ff, dropout, relu_dropout)
         self.layer_norm_1 = nn.LayerNorm(d_model, eps=1e-6)
         self.layer_norm_2 = nn.LayerNorm(d_model, eps=1e-6)
         self.drop = nn.Dropout(dropout)
@@ -120,7 +120,7 @@ class TransformerDecoder(DecoderBase):
     """
 
     def __init__(self, num_layers, d_model, heads, d_ff,
-                 copy_attn, self_attn_type, dropout, embeddings,
+                 copy_attn, self_attn_type, dropout, relu_dropout, attn_dropout, embeddings,
                  max_relative_positions):
         super(TransformerDecoder, self).__init__()
 
@@ -130,7 +130,7 @@ class TransformerDecoder(DecoderBase):
         self.state = {}
 
         self.transformer_layers = nn.ModuleList(
-            [TransformerDecoderLayer(d_model, heads, d_ff, dropout,
+            [TransformerDecoderLayer(d_model, heads, d_ff, dropout, relu_dropout, attn_dropout,
              self_attn_type=self_attn_type,
              max_relative_positions=max_relative_positions)
              for i in range(num_layers)])
@@ -152,6 +152,8 @@ class TransformerDecoder(DecoderBase):
             opt.copy_attn,
             opt.self_attn_type,
             opt.dropout,
+            opt.relu_dropout,
+            opt.attn_dropout,
             embeddings,
             opt.max_relative_positions)
 

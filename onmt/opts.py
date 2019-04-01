@@ -423,6 +423,10 @@ def train_opts(parser):
                    "max_grad_norm")
     group.add('--dropout', '-dropout', type=float, default=0.3,
               help="Dropout probability; applied in LSTM stacks.")
+    group.add('--relu_dropout', '-relu_dropout', type=float, default=0.0,
+              help="Dropout probability; applied after relu.")
+    group.add('--attn_dropout', '-attn_dropout', type=float, default=0.0,
+              help="Dropout probability; applied on attention weight.")
     group.add('--truncated_decoder', '-truncated_decoder', type=int, default=0,
               help="""Truncated bptt.""")
     group.add('--adam_beta1', '-adam_beta1', type=float, default=0.9,

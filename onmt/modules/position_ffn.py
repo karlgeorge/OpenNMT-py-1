@@ -11,14 +11,15 @@ class PositionwiseFeedForward(nn.Module):
         d_ff (int): the hidden layer size of the second-layer
             of the FNN.
         dropout (float): dropout probability in :math:`[0, 1)`.
+        relu_dropout (float): dropout probability after relu in :math:`[0, 1)`.
     """
 
-    def __init__(self, d_model, d_ff, dropout=0.1):
+    def __init__(self, d_model, d_ff, dropout=0.1, relu_dropout=0.0):
         super(PositionwiseFeedForward, self).__init__()
         self.w_1 = nn.Linear(d_model, d_ff)
         self.w_2 = nn.Linear(d_ff, d_model)
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
-        self.dropout_1 = nn.Dropout(dropout)
+        self.dropout_1 = nn.Dropout(relu_dropout)
         self.relu = nn.ReLU()
         self.dropout_2 = nn.Dropout(dropout)
 
