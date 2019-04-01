@@ -82,14 +82,14 @@ class TransformerEncoder(EncoderBase):
         * memory_bank ``(src_len, batch_size, model_dim)``
     """
 
-    def __init__(self, num_layers, d_model, heads, d_ff, dropout, embeddings,
+    def __init__(self, num_layers, d_model, heads, d_ff, dropout, relu_dropout, attn_dropout, embeddings,
                  max_relative_positions):
         super(TransformerEncoder, self).__init__()
 
         self.embeddings = embeddings
         self.transformer = nn.ModuleList(
             [TransformerEncoderLayer(
-                d_model, heads, d_ff, dropout,
+                d_model, heads, d_ff, dropout, relu_dropout, attn_dropout,
                 max_relative_positions=max_relative_positions)
              for i in range(num_layers)])
         self.layer_norm = nn.LayerNorm(d_model, eps=1e-6)
@@ -103,6 +103,8 @@ class TransformerEncoder(EncoderBase):
             opt.heads,
             opt.transformer_ff,
             opt.dropout,
+            opt.relu_dropout,
+            opt.attn_dropout,
             embeddings,
             opt.max_relative_positions)
 
